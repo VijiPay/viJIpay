@@ -1,0 +1,36 @@
+{
+  "name": "vijipay",
+  "version": "1.0.0",
+  "description": "ViJIPay helps prevent scam on the JIJI markeplace by acting as a trusted thirdparty escrow service between buyers and sellers",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shemzz/viJIpay.git"
+  },
+  "keywords": [
+    "escrow",
+    "jiji",
+    "payment",
+    "trust",
+    "scam",
+    "ecommerce",
+    "marketplace",
+    "payment"
+  ],
+  "author": "Shemang David Joshua",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shemzz/viJIpay/issues"
+  },
+  "homepage": "https://github.com/shemzz/viJIpay#readme",
+  "dependencies": {
+    "axios": "^1.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
