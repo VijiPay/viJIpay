@@ -1,5 +1,5 @@
 import axios from 'axios';
-import ProductModel from '../models/product.model.js';
+import models from '../models/index.js';
 
 const extractProductId = (mainUrl) => {
     const regex = /\/([^\/]+)-(\w+)\.html/;
@@ -29,7 +29,8 @@ export const getProductInfo = async (req, res) => {
         const getEndpoint = createGetEndpoint(mainUrl);
         if (getEndpoint) {
             const response = await axios.get(getEndpoint, { timeout: 5000 });
-            const product = new ProductModel(response.data);
+            const product = new models.ProductModel(response.data);
+            console.log(response.data)
             res.send(product);
         } else {
             res.status(400).send('Invalid URL');
