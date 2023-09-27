@@ -1,22 +1,16 @@
-// models/Product.js
-
 export default (sequelize, Sequelize) => {
-    const Product = sequelize.define('products', {
-      product_id: {
+    const Transaction = sequelize.define('transactions', {
+      transaction_id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      title: {
-        type: Sequelize.STRING,
+      product_id: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      price: {
-        type: Sequelize.FLOAT,
+      buyer_id: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       seller_id: {
@@ -26,12 +20,16 @@ export default (sequelize, Sequelize) => {
       status: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 'Active'
+        defaultValue: 'Pending'
+      },
+      amount: {
+        type: Sequelize.FLOAT,
+        allowNull: false
       }
     }, {
       timestamps: false
     });
   
-    return Product;
+    return Transaction;
   };
   

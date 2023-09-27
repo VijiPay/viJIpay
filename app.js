@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import db from './src/models/index.js';
 import router from './src/routes/index.routes.js';
 dotenv.config();
 
@@ -13,6 +14,9 @@ const corsOptions = {
     credentials: true,
 }
 app.use('*', cors(corsOptions));
+db.sequelize.sync()
+    .then(() => console.log('Database connected'))
+    .catch(err => console.log('Failed to Connect '+ err.message));
 
 app.use(router);
 
