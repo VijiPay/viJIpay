@@ -21,6 +21,12 @@ export default (sequelize, Sequelize) => {
             transaction_details: {
                 type: Sequelize.JSONB,
                 allowNull: true
+            },
+            status: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                enum: ['created', 'pending', 'completed', 'failed'],
+                defaultValue: 'created'
             }
             // Add more attributes as needed
         },

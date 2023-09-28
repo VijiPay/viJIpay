@@ -16,4 +16,7 @@ router.post('/api/v1/getProductInfo', product.getProductInfo);
 // create escrow transaction
 router.post('/api/v1/create', transaction.create);
 
+// update escrow transaction
+router.put('/api/v1/update/:id', transaction.update);
+
 export default router;

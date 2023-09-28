@@ -41,3 +41,20 @@ export const create = async (req, res) => {
         return res.status(500).json({ message: 'Server Error' });
     }
 }
+
+export const update = async (req, res) => {
+    const { id } = req.params;
+    console.log(id)
+    const { status } = req.body;
+    try {
+        const transaction = await Transaction.findByPk(id);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+        const updatedTransaction = await transaction.update({ status: status });
+        return res.status(200).json({ transaction: updatedTransaction });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
