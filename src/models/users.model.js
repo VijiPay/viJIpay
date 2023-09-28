@@ -1,7 +1,13 @@
-// models/User.js
+import { Model } from "sequelize";
+class User extends Model {
+    static associate(models) {
+        // Define associations with other models if needed
+    }
+}
 
 export default (sequelize, Sequelize) => {
-    const User = sequelize.define('users', {
+  User.init(
+    {
       user_id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -24,7 +30,7 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
-      phone_number: {
+      phone: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -32,10 +38,15 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true
       }
-    }, {
-      timestamps: false
-    });
-  
+},
+{
+  sequelize,
+  modelName: "User",
+}
+    );
     return User;
-  };
+}
+
+
+
   

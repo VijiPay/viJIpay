@@ -27,14 +27,34 @@ const createGetEndpoint = (mainUrl) =>{
     }
 }
 // get the product information from JIJI
+
 export const getProductInfo = async (req, res) => {
+ 
     try {
         const mainUrl = req.body.mainUrl;
         const getEndpoint = createGetEndpoint(mainUrl);
+
         if (getEndpoint) {
             const response = await axios.get(getEndpoint, { timeout: 5000 });
             const product = new JijiProductModel(response.data);
-            res.send(product);
+
+            // Define a function to fetch product info
+            const fetchProductInfo = async () => {
+                const response = await axios.get(getEndpoint, { timeout: 5000 });
+                productRetry = new JijiProductModel(response.data);
+            };
+
+            // Check if phone number is empty
+            if (!product.seller.phone) {
+                res.send({message: {
+                    '0': 'We were unable to fetch the Seller\'s phone number.',
+                    '1': 'Please go back to the Product page and Copy the Seller\'s phone number manually.',
+                    '2': 'Then, paste it in the Phone Number field or try again.'
+                }, product
+                });
+            } else {
+                res.send(product);
+            }
         } else {
             res.status(400).send('Invalid URL');
         }
@@ -44,31 +64,35 @@ export const getProductInfo = async (req, res) => {
     }
 }
 
+
 // create the escrow transaction
-export const create = async (req, res) =>{
-    try {
-        // get the product info, buyerId, and transaction details
-        const { product, buyer_id, transaction_details } = req.body;
-        const buyer = await User.findByPk(buyer_id);
-        // check if buyer if exist
+// export const create = async (req, res) => {
+//     try {
+//         // get the product info, and transaction details from the request body
+//         const { product, transaction_details } = req.body;
 
-        // extract the seller id from the product info
+       
 
-        // check if the seller id exist in the database
+//         const seller_details = {
+//             id: seller.id,
+//             name: seller.name,
+//             email: seller.email // Assuming your User model has a field named email
+//             // Add any other details you need
+//         };
 
-        // if exist, retrieve the details
+//         const transaction = await Transaction.create({
+//             product_info: product,
+//             buyer_id: buyer.id,
+//             seller_id: seller_details.id,
+//             ...transaction_details
+//         });
 
-        // compare and assign the user(seller) id to the transaction object
+//         // Implement notification logic here
 
-        //if  not exist, extract the phone number from the product object
+//         return res.status(200).json({ message: 'Transaction created successfully' });
+//     } catch (error) {
+//         console.error(error.message);
+//         return res.status(500).json({ message: 'Server Error' });
+//     }
+// }
 
-        // save the transaction object
-
-        // send notification to both parties
-        
-    } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({ message: 'Server Error' });
-    }
-        
-    }

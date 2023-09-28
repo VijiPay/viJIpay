@@ -14,7 +14,7 @@ const corsOptions = {
     credentials: true,
 }
 app.use('*', cors(corsOptions));
-db.sequelize.sync()
+db.sequelize.sync({ force: true})
     .then(() => console.log('Database connected'))
     .catch(err => console.log('Failed to Connect '+ err.message));
 

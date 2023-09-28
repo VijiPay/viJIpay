@@ -1,35 +1,36 @@
+import { Model, DataTypes } from "sequelize";
+// import sequelize from "./sequelize.js";
+class Transaction extends Model {
+    static associate(models) {
+        // Define associations with other models if needed
+    }
+}
+
 export default (sequelize, Sequelize) => {
-    const Transaction = sequelize.define('transactions', {
-      transaction_id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      product_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      buyer_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      seller_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      status: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: 'Pending'
-      },
-      amount: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      }
-    }, {
-      timestamps: false
-    });
-  
+    Transaction.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            product: {
+                type: DataTypes.JSONB,
+                allowNull: false
+            },
+            transaction_details: {
+                type: Sequelize.JSONB,
+                allowNull: true
+            }
+            // Add more attributes as needed
+        },
+        {
+            sequelize,
+            modelName: "Transaction",
+        }
+    );
+
     return Transaction;
-  };
-  
+}
+
+

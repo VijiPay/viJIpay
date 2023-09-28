@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 const config = {
-    HOST: process.env.DB_HOST,
-    USER: process.env.DB_USER,
-    PASSWORD: process.env.DB_PASSWORD,
-    DB: process.env.jiviDB,
+    HOST: process.env.HOST,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,  
+    DB: process.env.DB,
     dialect: "postgres",
     pool: {
         max: 5,
