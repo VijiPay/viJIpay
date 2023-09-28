@@ -42,6 +42,7 @@ export const create = async (req, res) => {
     }
 }
 
+// update transaction status
 export const update = async (req, res) => {
     const { id } = req.params;
     console.log(id)
@@ -53,6 +54,145 @@ export const update = async (req, res) => {
         }
         const updatedTransaction = await transaction.update({ status: status });
         return res.status(200).json({ transaction: updatedTransaction });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+// get transaction by id
+export const getTransaction = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const transaction = await Transaction.findByPk(id);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+        return res.status(200).json({ transaction: transaction });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+// get all transactions
+export const getAllTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll();
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        return res.status(200).json({ transactions: transactions });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+// get all transactions by user id
+export const getAllTransactionsByUserId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                [Op.or]: [{ 'product.seller.id': id }, { 'transaction_details.buyer.id': id }]
+            }
+        });
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        return res.status(200).json({ transactions: transactions });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+// delete transaction by id where status is created
+export const deleteTransaction = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const transaction = await Transaction.findByPk(id);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+        if (transaction.status !== 'created') {
+            return res.status(400).json({ message: 'Transaction cannot be deleted' });
+        }
+        await transaction.destroy();
+        return res.status(200).json({ message: 'Transaction deleted successfully' });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//delete all transactions
+export const deleteAllTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll();
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        await Transaction.destroy({ where: {}, truncate: false });
+        return res.status(200).json({ message: 'Transactions deleted successfully' });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//find all transactions by status
+export const findAllTransactionsByStatus = async (req, res) => {
+    const { status } = req.params;
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                status: status
+            }
+        });
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        return res.status(200).json({ transactions: transactions });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//get single user transactions count by status
+export const findUserTransactionsCountByStatus = async (req, res) => {
+    const { id, status } = req.params;
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                [Op.or]: [{ 'product.seller.id': id }, { 'transaction_details.buyer.id': id }],
+                status: status
+            }
+        });
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        return res.status(200).json({ transactions: transactions.length });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//find all transactions count by status
+export const findAllTransactionsCountByStatus = async (req, res) => {
+    const { status } = req.params;
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                status: status
+            }
+        });
+        if (!transactions) {
+            return res.status(404).json({ message: 'No Transaction found' });
+        }
+        return res.status(200).json({ transactions: transactions.length });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
