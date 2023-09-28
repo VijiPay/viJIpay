@@ -1,6 +1,8 @@
 import express from 'express';
 import * as product from '../controllers/product.controller.js';
 import * as transaction from '../controllers/transaction.controller.js';
+import { verifySignUp, authJwt } from '../middleware/index.js';
+import * as user from '../controllers/user.controller.js';
 
 const router = express.Router();
 // simple route to display on mainpage
@@ -43,4 +45,17 @@ router.delete('/api/v1/delete/:id', transaction.deleteTransaction);
 // delete all escrow transactions
 router.delete('/api/v1/delete', transaction.deleteAllTransactions);
 
+
+
+// :::::::::::::::::::::::::::USER ROUTES::::::::::::::::::::::::::::::::::
+
+
 export default router;
+//signup
+router.post('/api/v1/signup', [verifySignUp.checkDuplicateEmail, verifySignUp.checkRolesExisted], user.signup);
+
+//signin
+router.post('/api/v1/signin', user.signin);
+
+//create roles
+router.post('/api/v1/roles', user.createRole);

@@ -3,7 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import db from './src/models/index.js';
 import router from './src/routes/index.routes.js';
+
 dotenv.config();
+
+const Role = db.roles;
 
 const app = express();
 app.use(express.json());
@@ -15,9 +18,29 @@ const corsOptions = {
 }
 app.use('*', cors(corsOptions));
 db.sequelize.sync()
-    .then(() => console.log('Database connected'))
-    .catch(err => console.log('Failed to Connect '+ err.message));
+    .then(() => {
+        console.log('Resync Db');
+        // initial();
+    })
+    .catch(err => console.log('Failed to Connect: '+ err.message));
 
+    function initial() {
+        Role.create({
+          id: 1,
+          name: "user"
+        });
+       
+        Role.create({
+          id: 2,
+          name: "moderator"
+        });
+       
+        Role.create({
+          id: 3,
+          name: "admin"
+        });
+    }
+      
 app.use(router);
 
 const port = process.env.PORT || 4344;

@@ -1,8 +1,10 @@
 import { Model } from "sequelize";
+
 class User extends Model {
-    static associate(models) {
-        // Define associations with other models if needed
-    }
+  static associate(models) {
+    models.User.belongsTo(models.Role, { foreignKey: 'roleId' });
+  }
+  
 }
 
 export default (sequelize, Sequelize) => {
@@ -37,7 +39,11 @@ export default (sequelize, Sequelize) => {
       address: {
         type: Sequelize.STRING,
         allowNull: true
-      }
+      },
+      roleId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
 },
 {
   sequelize,
