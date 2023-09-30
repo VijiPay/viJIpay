@@ -5,6 +5,11 @@ import authConfig from '../config/auth.config.js';
 import crypto from 'crypto';
 
 const {users: User, roles: Role} = db;
+//generate token
+const generateToken = (length) => {
+    const token = crypto.randomBytes(length).toString('hex');
+    return token;
+}
 
 //user signup
 export const signup = async (req, res) => {
@@ -25,6 +30,15 @@ export const signup = async (req, res) => {
             address,
             roleId: role.dataValues.id
         });
+        
+         // Generate email verification token and expiration date
+         const verificationToken = generateToken(20);
+         user.verificationToken = verificationToken;
+         user.verificationTokenExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
+         await user.save();
+
+        //send email
+
         return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         console.error(error.message);
@@ -83,27 +97,6 @@ export const signin = async (req, res) => {
     }
 }
 
-
-export const createRole = (req, res) => {
-    const role = req.body;
-
-    Role.create({
-      id: 1,
-      name: role[0]
-    });
-   
-    Role.create({
-      id: 2,
-      name: role[1]
-    });
-   
-    Role.create({
-      id: 3,
-      name: role[2]
-    });
-    res.send({ message: "Roles were created successfully!" });
-}
-
 //forgot password
 export const forgotPassword = async (req, res) => {
    try {
@@ -117,7 +110,7 @@ export const forgotPassword = async (req, res) => {
     if(!user) {
         return res.status(404).json({ message: 'User not found' });
     }
-    const resetToken = generateResetToken();
+    const resetToken = generateToken(32);
     user.resetPasswordToken = resetToken;
 
     user.save();
@@ -131,10 +124,49 @@ export const forgotPassword = async (req, res) => {
    }
 }
 
-//generate reset token
-const generateResetToken = () => {
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    return resetToken;
+//verify email
+export const verifyEmail = async (req, res) => {
+    const { token } = req.params;
+    try {
+        const user = await User.findOne({
+            where: {
+                verificationToken: token
+            }
+        });
+        if(!user) {
+            return res.status(404).json({ message: 'Invalid or expired token' });
+        }
+        user.verificationToken = null;
+        user.verificationTokenExpiration = null;
+        user.email_verified = true;
+        await user.save();
+        return res.status(200).json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//send verification email
+export const sendVerificationEmail = async (email, res) => {
+    const verificationToken = generateToken(20);
+    const verificationTokenExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
+
+    const user = await User.findOne({
+        where: {
+            email
+        }
+    });
+    if(!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiration = verificationTokenExpiration;
+    user.save();
+
+    //send email with verification token (verificationToken)
+
+    return res.status(200).json({ message: 'Verification email sent' });
 }
 
 //verify reset token
@@ -185,3 +217,20 @@ export const resetPassword = async (req, res) => {
     }
 }
 
+//suspend or delete user
+export const suspendUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        setStatus = req.body.status;
+        const user = await User.findByPk(id);
+        if(!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        user.status = setStatus;
+        user.save();
+        return res.status(200).json({ message: 'User suspended' });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+}

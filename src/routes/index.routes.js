@@ -49,16 +49,12 @@ router.delete('/api/v1/delete', transaction.deleteAllTransactions);
 
 // :::::::::::::::::::::::::::USER ROUTES::::::::::::::::::::::::::::::::::
 
-
 export default router;
 //signup
 router.post('/api/v1/signup', [verifySignUp.checkDuplicateEmail, verifySignUp.checkRolesExisted], user.signup);
 
 //signin
 router.post('/api/v1/signin', user.signin);
-
-//create roles
-router.post('/api/v1/roles', user.createRole);
 
 //forgot password
 router.post('/api/v1/forgotPassword', user.forgotPassword);
@@ -68,3 +64,6 @@ router.post('/api/v1/verifyToken', user.verifyResetToken);
 
 //reset password
 router.post('/api/v1/resetPassword', user.resetPassword);
+
+//verify email
+router.get('/verify/:token', user.verifyEmail);

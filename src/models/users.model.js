@@ -48,6 +48,22 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true
       },
+      status: {
+        type: Sequelize.ENUM('active', 'suspended', 'inactive'),
+        defaultValue: 'active'
+      },
+      email_verified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      verificationToken: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      verificationTokenExpiration: {
+        type: Sequelize.DATE,
+        allowNull: true
+      }
 },
 {
   sequelize,
