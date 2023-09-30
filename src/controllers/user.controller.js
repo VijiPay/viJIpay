@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import authConfig from '../config/auth.config.js';
+import crypto from 'crypto';
 
 const {users: User, roles: Role} = db;
 
@@ -47,8 +48,8 @@ export const signin = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const passwordIsValid = bcrypt.compare(password, user.password_hash);
-
+        const passwordIsValid = bcrypt.compareSync(password, user.password_hash);
+        console.log(passwordIsValid)
         if (!passwordIsValid) {
             return res.status(401).json({
                 accessToken: null,
@@ -123,7 +124,7 @@ export const forgotPassword = async (req, res) => {
 
     //send email
     
-    return res.status(200).json({ message: 'Reset password link sent to your email' });
+    return res.status(200).json({ message: 'Reset password link sent to your email', object:user.resetPasswordToken });
    } catch (error) {
        console.error(error.message);
        return res.status(500).json({ message: 'Server Error' });

@@ -59,3 +59,12 @@ router.post('/api/v1/signin', user.signin);
 
 //create roles
 router.post('/api/v1/roles', user.createRole);
+
+//forgot password
+router.post('/api/v1/forgotPassword', user.forgotPassword);
+
+//verify token
+router.post('/api/v1/verifyToken', user.verifyResetToken);
+
+//reset password
+router.post('/api/v1/resetPassword', user.resetPassword);

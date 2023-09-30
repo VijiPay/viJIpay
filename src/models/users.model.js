@@ -44,6 +44,10 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      resetPasswordToken: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
 },
 {
   sequelize,
