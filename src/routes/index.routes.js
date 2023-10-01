@@ -67,3 +67,6 @@ router.post('/api/v1/resetPassword', user.resetPassword);
 
 //verify email
 router.get('/verify/:token', user.verifyEmail);
+
+//delete user
+router.delete('/api/v1/user/delete/:id', user.deleteUser);
