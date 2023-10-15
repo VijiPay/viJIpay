@@ -47,13 +47,14 @@ export const getProductInfo = async (req, res) => {
             // Check if phone number is empty
             if (!product.seller.phone) {
                 res.send({message: {
-                    '0': 'We were unable to fetch the Seller\'s phone number.',
-                    '1': 'Please go back to the Product page and Copy the Seller\'s phone number manually.',
-                    '2': 'Then, paste it in the Phone Number field or try again.'
+                    'one': 'We were unable to fetch the Seller\'s phone number',
+                    'two': 'Please go back to the Product page and Copy the Seller\'s phone number manually',
+                    'three': 'Then, paste it in the Phone Number field to continue',
+                    'four': 'or try again to automatically fetch the phone number'
                 }, product
                 });
             } else {
-                res.send(product);
+                res.send({message:{}, product });
             }
         } else {
             res.status(400).send('Invalid URL');

@@ -20,7 +20,7 @@ export default (sequelize, Sequelize) => {
             },
             transaction_details: {
                 type: Sequelize.JSONB,
-                allowNull: true
+                allowNull: false
             },
             status: {
                 type: Sequelize.STRING,

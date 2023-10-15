@@ -3,6 +3,7 @@ import * as product from '../controllers/product.controller.js';
 import * as transaction from '../controllers/transaction.controller.js';
 import { verifySignUp, authJwt } from '../middleware/index.js';
 import * as user from '../controllers/user.controller.js';
+import * as payment from '../controllers/payment.controller.js';
 
 const router = express.Router();
 // simple route to display on mainpage
@@ -45,11 +46,13 @@ router.delete('/api/v1/delete/:id', transaction.deleteTransaction);
 // delete all escrow transactions
 router.delete('/api/v1/delete', transaction.deleteAllTransactions);
 
+// save Payment to Database
+router.post('/api/v1/savepayment', payment.savePaymentData);
+
 
 
 // :::::::::::::::::::::::::::USER ROUTES::::::::::::::::::::::::::::::::::
 
-export default router;
 //signup
 router.post('/api/v1/signup', [verifySignUp.checkDuplicateEmail, verifySignUp.checkRolesExisted], user.signup);
 
@@ -70,3 +73,5 @@ router.get('/verify/:token', user.verifyEmail);
 
 //delete user
 router.delete('/api/v1/user/delete/:id', user.deleteUser);
+
+export default router;
