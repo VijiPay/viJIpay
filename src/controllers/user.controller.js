@@ -13,8 +13,13 @@ const generateToken = (length) => {
 
 //user signup
 export const signup = async (req, res) => {
+    const { name, email, password, phone, isSeller } = req.body;
+    const names = name.split(' ');
+
+const firstName = names.slice(0, -1).join(' ');
+const lastName = names[names.length - 1];
     try {
-        const { firstName, lastName, email, password, phoneNumber, address } = req.body;
+
         const role = await Role.findOne({
             where: {
                 name: 'user'
@@ -24,13 +29,12 @@ export const signup = async (req, res) => {
         const user = await User.create({
             first_name:firstName,
             last_name:lastName,
-            email,
+            email: email,
             password_hash: bcrypt.hashSync(password, 8),
-            phone:phoneNumber,
-            address,
-            roleId: role.dataValues.id
+            phone:phone,
+            roleId: role.dataValues.id,
+            isSeller: isSeller
         });
-        
          // Generate email verification token and expiration date
          const verificationToken = generateToken(20);
          user.verificationToken = verificationToken;

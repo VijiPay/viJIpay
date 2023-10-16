@@ -25,7 +25,7 @@ export default (sequelize, Sequelize) => {
             status: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                enum: ['created', 'pending', 'completed', 'failed'],
+                enum: ['created', 'pending', 'started', 'completed', 'dispute'],
                 defaultValue: 'created'
             }
             // Add more attributes as needed

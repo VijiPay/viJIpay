@@ -63,6 +63,10 @@ export default (sequelize, Sequelize) => {
       verificationTokenExpiration: {
         type: Sequelize.DATE,
         allowNull: true
+      },
+      isSeller: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
       }
 },
 {

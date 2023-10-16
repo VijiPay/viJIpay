@@ -93,16 +93,36 @@ export const getAllTransactions = async (req, res) => {
 // get all transactions by user id
 export const getAllTransactionsByUserId = async (req, res) => {
     const { id } = req.params;
+
     try {
-        const transactions = await Transaction.findAll({
-            where: {
-                [Op.or]: [{ 'product.seller.id': id }, { 'transaction_details.buyer.id': id }]
-            }
-        });
-        if (!transactions) {
-            return res.status(404).json({ message: 'No Transaction found' });
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        return res.status(200).json({ transactions: transactions });
+
+        let transactions;
+
+        if (user.isSeller) {
+            transactions = await Transaction.findAll({
+                where: {
+                    [Op.or]: [
+                        { 'product.seller.phone': user.phone },
+                        { 'transaction_details.buyer_id': id }
+                    ]
+                }
+            })
+                console.log('seller', transactions)
+            return res.status(200).json({ transactions, isSeller: true });
+        } else {
+            transactions = await Transaction.findAll({
+                where: {
+                    'transaction_details.buyer_id': id
+                }
+            })
+                console.log('buyer', transactions)
+            return res.status(200).json({ transactions, isSeller: false });
+        }
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
