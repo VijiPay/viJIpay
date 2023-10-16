@@ -45,9 +45,10 @@ export const create = async (req, res) => {
 
 // update transaction status
 export const update = async (req, res) => {
+    const  {status}  = req.body;
+
     const { id } = req.params;
-    console.log(id)
-    const { status } = req.body;
+
     try {
         const transaction = await Transaction.findByPk(id);
         if (!transaction) {

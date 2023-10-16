@@ -50,29 +50,31 @@ export const status = async (req, res) => {
         reference: ref,
       },
     });
+
     if (transaction) {
-      txn = {
+       txn = {
         reference: transaction.reference,
-        amount: transaction.totalCollected,
+         amount: transaction.amount + transaction.fee,
       };
     }
-
+      
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${ref}`,
       {
         headers: header,
       }
     );
+      
     if (response) {
-      const resp = response.data.data;
+        const resp = response.data.data;
       payment = {
         status: resp.status,
         reference: resp.reference,
-        amount: resp.amount,
-        fee: resp.fees,
+        amount: Number(String(resp.amount).slice(0, -2)),
       };
+        console.log('ehh', payment, txn)
 
-        if (txn.amount == payment.amount && payment.status == "success") {
+        if (txn.amount === payment.amount && payment.status === "success") {
            const updatePay = await Payment.findOne({
                 where: {
                   reference: ref
@@ -82,7 +84,7 @@ export const status = async (req, res) => {
         res
           .status(200)
           .send({ message: "Payment Confirmed", data: payment, id: transaction.transactionId });
-      } else if (txn.amount == payment.amount && payment.status != "success") {
+      } else if (txn.amount === payment.amount && payment.status != "success") {
 
         res
           .status(200)
@@ -90,7 +92,16 @@ export const status = async (req, res) => {
             message: "Payment is Pending Confirmation",
             data: payment,
           });
-      }
+        }
+        else if (txn.amount !== payment.amount && payment.status === "success") {
+
+            res
+              .status(200)
+              .send({
+                message: "You Sent a Wrong Amount",
+                data: payment,
+              });
+          }
     } else {
       res.status(200).send({ message: "no response" });
     }
