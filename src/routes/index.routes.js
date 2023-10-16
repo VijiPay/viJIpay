@@ -49,6 +49,8 @@ router.delete('/api/v1/delete', transaction.deleteAllTransactions);
 // save Payment to Database
 router.post('/api/v1/savepayment', payment.savePaymentData);
 
+// check payment status
+router.post('/api/v1/paymentstatus', payment.status);
 
 
 // :::::::::::::::::::::::::::USER ROUTES::::::::::::::::::::::::::::::::::
