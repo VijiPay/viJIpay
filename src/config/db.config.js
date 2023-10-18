@@ -1,12 +1,19 @@
 import dotenv from 'dotenv';
 dotenv.config();
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+let { HOST, DB_USER, DB_PASSWORD, DB } = process.env;
 
 const config = {
-    HOST: process.env.HOST,
-    DB_USER: process.env.DB_USER,
-    DB_PASSWORD: process.env.DB_PASSWORD,  
-    DB: process.env.DB,
+    HOST: PGHOST,
+    DB_USER: PGUSER,
+    DB_PASSWORD: PGPASSWORD,  
+    DB: PGDATABASE,
     dialect: "postgres",
+    ssl: 'require',
+    // connection: {
+    //     options: `project=${ENDPOINT_ID}`,
+    // },
+
     pool: {
         max: 5,
         min: 0,
@@ -16,3 +23,16 @@ const config = {
 };
 
 export default config;
+
+
+// const sql = postgres({
+//   host: PGHOST,
+//   database: PGDATABASE,
+//   username: PGUSER,
+//   password: PGPASSWORD,
+//   port: 5432,
+//   ssl: 'require',
+//   connection: {
+//     options: `project=${ENDPOINT_ID}`,
+//   },
+// });

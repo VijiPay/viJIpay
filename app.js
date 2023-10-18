@@ -6,6 +6,7 @@ import router from './src/routes/index.routes.js';
 
 dotenv.config();
 
+
 const Role = db.roles;
 
 const app = express();
@@ -19,7 +20,7 @@ const corsOptions = {
 app.use('*', cors(corsOptions));
 db.sequelize.sync()
     .then(() => {
-        console.log('Resync Db');
+      console.log('Resync Db');
         // initial();
     })
     .catch(err => console.log('Failed to Connect: '+ err.message));

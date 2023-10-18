@@ -4,6 +4,7 @@ import * as transaction from '../controllers/transaction.controller.js';
 import { verifySignUp, authJwt } from '../middleware/index.js';
 import * as user from '../controllers/user.controller.js';
 import * as payment from '../controllers/payment.controller.js';
+import * as dispute from '../controllers/dispute.controller.js';
 
 const router = express.Router();
 // simple route to display on mainpage
@@ -75,5 +76,24 @@ router.get('/verify/:token', user.verifyEmail);
 
 //delete user
 router.delete('/api/v1/user/delete/:id', user.deleteUser);
+
+//get user
+router.get('/api/v1/user/:id', user.getUser);
+
+//update user
+router.put('/api/v1/update/user/:id', user.update);
+
+// get Banks List
+router.get('/api/v1/getbanks', payment.getBanks);
+
+//validate account number
+router.post('/api/v1/validateaccount', payment.validateAccountDetails)
+
+
+
+// ::::::::::::::::::::::::::::::: Disputes ::::::::::::::::::::::::::
+router.post('/api/v1/dispute/create/:id', dispute.create);
+router.get('/api/v1/disputes/:id', dispute.getUserDisputeById)
+router.get('/api/v1/dispute/:id', dispute.getDisputeById)
 
 export default router;

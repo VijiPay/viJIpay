@@ -10,14 +10,16 @@ export const create = async (req, res) => {
         const product = prod;
         const transaction_details = tx_details;
 
-        const seller_id = product.seller.id;
-        console.log(seller_id)
+        const seller_phone = product.seller.phone;
 
-        const seller = await User.findByPk(seller_id);
+        const seller = await User.findOne({
+            where: {
+                phone: seller_phone
+            }
+            });
 
         if (!seller) {
             const phone = product.seller.phone;
-
             const transaction = await Transaction.create({
                 product: product,
                 transaction_details:transaction_details
@@ -34,7 +36,7 @@ export const create = async (req, res) => {
             transaction_details: transaction_details
         });
         // Send SMS and Email notification to the seller
-        console.log('Send sms and email notification to the seller with id: ' + seller_id)
+        console.log('Send sms and email notification to the seller with id: ' + seller.email , seller.phone)
 
         return res.status(200).json({id: transaction.id, message: 'Transaction created Successfully' });
     } catch (error) {
@@ -112,7 +114,6 @@ export const getAllTransactionsByUserId = async (req, res) => {
                     ]
                 }
             })
-                console.log('seller', transactions)
             return res.status(200).json({ transactions, isSeller: true });
         } else {
             transactions = await Transaction.findAll({
@@ -120,7 +121,6 @@ export const getAllTransactionsByUserId = async (req, res) => {
                     'transaction_details.buyer_id': id
                 }
             })
-                console.log('buyer', transactions)
             return res.status(200).json({ transactions, isSeller: false });
         }
     } catch (error) {

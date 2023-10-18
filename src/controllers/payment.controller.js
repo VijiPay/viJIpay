@@ -110,3 +110,49 @@ export const status = async (req, res) => {
     res.status(400).send({ message: err });
   }
 };
+
+
+// Helper function to get bank names and codes
+export const getBanks = async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://api.paystack.co/bank`,
+      {
+        headers: header
+      }
+    );
+
+    const { status, data } = response.data;
+
+    if (status && data && data.length > 0) {
+      const bankNames = data.map((bank) => ({ name: bank.name, code: bank.code }));
+      res.status(200).json(bankNames);
+    } else {
+      res.statn({ error: "No bank names found." });
+    }
+  } catch (error) {
+    console.error("Error retrieving bank names:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+// validate the users account details
+export const validateAccountDetails = async (req, res) => {
+  const { accountNumber, bankCode } = req.body
+console.log(req.body, typeof(accountNumber))
+  try {
+    const response = await axios.get(
+      `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
+      {
+        headers:header,
+      }
+    );
+    const { data } = response
+    if (data) {
+      res.send(data)
+    }
+  } catch (error) {
+    res.send(error)
+    // console.log(error)
+  }
+}

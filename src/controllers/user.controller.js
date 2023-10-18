@@ -25,6 +25,7 @@ const lastName = names[names.length - 1];
                 name: 'user'
             }
         });
+        console.log('role', role)
 
         const user = await User.create({
             first_name:firstName,
@@ -32,7 +33,7 @@ const lastName = names[names.length - 1];
             email: email,
             password_hash: bcrypt.hashSync(password, 8),
             phone:phone,
-            roleId: role.dataValues.id,
+            roleId: role.id,
             isSeller: isSeller
         });
          // Generate email verification token and expiration date
@@ -235,5 +236,37 @@ export const deleteUser = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+//get User
+export const getUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findByPk(id);
+        if (user) {
+            res.status(200).send({user: user})
+        }
+    } catch (error) {
+        res.status(500).send({message: 'user not found'})
+    }
+}
+
+// update user
+export const update = async (req, res) => {
+    const  data  = req.body;
+console.log(data)
+    const { id } = req.params;
+
+    try {
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const updateduser = await user.update(data);
+        return res.status(200).json({ user: updateduser, message: 'User Updated' });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 }
