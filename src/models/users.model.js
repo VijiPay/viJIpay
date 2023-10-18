@@ -10,7 +10,7 @@ class User extends Model {
 export default (sequelize, Sequelize) => {
   User.init(
     {
-      user_id: {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true

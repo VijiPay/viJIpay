@@ -68,10 +68,8 @@ export const signin = async (req, res) => {
         }
 
         const passwordIsValid = bcrypt.compareSync(password, user.password_hash);
-        console.log(passwordIsValid)
         if (!passwordIsValid) {
             return res.status(401).json({
-                accessToken: null,
                 message: 'Invalid Password'
             });
         }
@@ -81,21 +79,19 @@ export const signin = async (req, res) => {
         });
 
         const role = await Role.findByPk(user.roleId);
-
         const authority = role.name;
 
-        const { user_id, first_name, last_name, email:user_email, phone:phone_number, address } = user.dataValues;
-
-        return res.status(200).json({
-            user_id,
-            first_name,
-            last_name,
-            user_email,
-            phone_number,
-            address,
+        const response = {
+            id: user.id,
+            firstName: user.first_name,
+            phone: user.phone,
+            isSeller: user.isSeller,
             role: authority,
-            accessToken: token
-        });
+            accessToken: token,
+            refreshToken: ''
+        }
+
+        return res.status(200).json(response);
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
