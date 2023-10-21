@@ -44,5 +44,5 @@ db.sequelize.sync()
       
 app.use(router);
 
-const port = process.env.PORT || 4344;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+const port = process.env.PORT;
+app.listen(80, () => console.log(`Server running on port ${port}`));
