@@ -20,4 +20,4 @@ const sequelize = new Sequelize(config.DB, config.DB_USER, config.DB_PASSWORD, {
     },
 });
 
-export default sequelize;
+export default sequelize;``

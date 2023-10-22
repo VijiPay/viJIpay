@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-let { HOST, DB_USER, DB_PASSWORD, DB } = process.env;
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID} = process.env;
 
 const config = {
     HOST: PGHOST,
@@ -10,10 +9,7 @@ const config = {
     DB: PGDATABASE,
     dialect: "postgres",
     ssl: 'require',
-    // connection: {
-    //     options: `project=${ENDPOINT_ID}`,
-    // },
-
+    ENDPOINT_ID: ENDPOINT_ID,
     pool: {
         max: 5,
         min: 0,
