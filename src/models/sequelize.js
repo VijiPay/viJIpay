@@ -1,23 +1,18 @@
 import { Sequelize } from "sequelize";
-import config from "../config/db.config.js";
+import dotenv from 'dotenv';
+dotenv.config();
+let { HOST, DATABASE, DBUSER, DBPASSWORD} = process.env;
 
-const sequelize = new Sequelize(config.DB, config.DB_USER, config.DB_PASSWORD, {
-    host: config.HOST,
-    dialect: config.dialect,
+const sequelize = new Sequelize(DATABASE, DBUSER, DBPASSWORD, {
+    host: HOST,
+    dialect: 'postgres',
     logging: false,
-    dialectOptions: {
-        project: config.ENDPOINT_ID,
-        ssl: {
-            require: true,
-            rejectUnauthorized: false,
-        },
-    },
     pool: {
-        max: config.pool.max,
-        min: config.pool.min,
-        acquire: config.pool.acquire,
-        idle: config.pool.idle,
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 20000,
     },
 });
 
-export default sequelize;``
+export default sequelize;
