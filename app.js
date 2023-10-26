@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: ['https://vijipay.ng', 'http://localhost:4200'],
+    origin: ['https://vijipay.ng', 'https://www.vijipay.ng', 'http://localhost:4200'],
     optionsSuccessStatus: 200,
     credentials: true,
 }
