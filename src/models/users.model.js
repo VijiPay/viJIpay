@@ -75,7 +75,19 @@ export default (sequelize, Sequelize) => {
       isSeller: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
-      }
+      },
+      bank_name: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      account_name: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      account_number: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
 },
 {
   sequelize,

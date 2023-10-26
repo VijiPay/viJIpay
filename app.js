@@ -18,7 +18,7 @@ const corsOptions = {
     credentials: true,
 }
 app.use('*', cors(corsOptions));
-db.sequelize.sync()
+db.sequelize.sync({force: true})
     .then(() => {
       console.log('Resync Db');
         initial();

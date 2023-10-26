@@ -17,6 +17,10 @@ export const signup = async (req, res) => {
     const { name, email, password, phone, isSeller } = req.body;
     const names = name.split(' ');
 
+    if (phone === 'Invalid phone number') {
+        return res.status(500).json({ message: 'Invalid phone number' });
+    }
+
 const firstName = names.slice(0, -1).join(' ');
 const lastName = names[names.length - 1];
     try {
@@ -101,6 +105,8 @@ export const signin = async (req, res) => {
             firstName: user.first_name,
             phone: user.phone,
             isSeller: user.isSeller,
+            email: user.email,
+            email_verified: user.email_verified,
             role: authority,
             accessToken: token,
             refreshToken: refreshToken.token
@@ -175,7 +181,6 @@ export const forgotPassword = async (req, res) => {
 //verify email
 export const verifyEmail = async (req, res) => {
     const { token } = req.params;
-    console.log(token)
     try {
         const user = await User.findOne({
             where: {
