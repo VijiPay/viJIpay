@@ -40,6 +40,14 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true
       },
+      gender: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      dob: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
       roleId: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -66,7 +74,7 @@ export default (sequelize, Sequelize) => {
       },
       isSeller: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true,
+        defaultValue: false,
       }
 },
 {

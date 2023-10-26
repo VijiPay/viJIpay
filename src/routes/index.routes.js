@@ -62,6 +62,15 @@ router.post('/api/v1/signup', [verifySignUp.checkDuplicateEmail, verifySignUp.ch
 //signin
 router.post('/api/v1/signin', user.signin);
 
+//send email verification code
+router.post('/api/v1/sendverificationcode', user.sendVerificationEmail);
+
+//verify email code
+router.get('/api/v1/confirmemail/:token', user.verifyEmail);
+
+//refresh token
+router.post("/api/v1/refreshtoken", user.refreshToken)
+
 //forgot password
 router.post('/api/v1/forgotPassword', user.forgotPassword);
 
@@ -95,5 +104,6 @@ router.post('/api/v1/validateaccount', payment.validateAccountDetails)
 router.post('/api/v1/dispute/create/:id', dispute.create);
 router.get('/api/v1/disputes/:id', dispute.getUserDisputeById)
 router.get('/api/v1/dispute/:id', dispute.getDisputeById)
+router.post('/api/v1/dispute/end/:id', dispute.end);
 
 export default router;

@@ -3,8 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import authConfig from '../config/auth.config.js';
 import crypto from 'crypto';
+import { customAlphabet } from "nanoid";
 
-const {users: User, roles: Role} = db;
+const {users: User, roles: Role, refreshToken: RefreshToken} = db;
 //generate token
 const generateToken = (length) => {
     const token = crypto.randomBytes(length).toString('hex');
@@ -36,19 +37,32 @@ const lastName = names[names.length - 1];
             roleId: role.id,
             isSeller: isSeller
         });
-         // Generate email verification token and expiration date
-         const verificationToken = generateToken(20);
-         user.verificationToken = verificationToken;
-         user.verificationTokenExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
          await user.save();
 
         //send email
-
         return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
     }
+}
+
+const createToken = async (id) => {
+    let expiredAt = new Date();
+    expiredAt.setSeconds(expiredAt.getSeconds() + authConfig.jwtRefreshExpiration);
+    let _tokenGenerate = customAlphabet('1234567890abcdef', 25);
+    const _token = _tokenGenerate()
+    const refreshTokenObject = await RefreshToken.create({
+        token: _token,
+        userId: id,
+        expiryDate: expiredAt.getTime()
+    })
+
+    return refreshTokenObject;
+}
+
+const verifyExpiration = (token) => {
+    return token.expiryDate.getTime() < new Date().getTime();
 }
 
 
@@ -75,11 +89,12 @@ export const signin = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id }, authConfig.secret, {
-            expiresIn: 86400 // 24 hours
+            expiresIn: authConfig.jwtExpiration
         });
-
         const role = await Role.findByPk(user.roleId);
         const authority = role.name;
+
+        let refreshToken = await createToken(user.id);
 
         const response = {
             id: user.id,
@@ -88,14 +103,46 @@ export const signin = async (req, res) => {
             isSeller: user.isSeller,
             role: authority,
             accessToken: token,
-            refreshToken: ''
+            refreshToken: refreshToken.token
         }
 
         return res.status(200).json(response);
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         return res.status(500).json({ message: 'Server Error' });
     }
+}
+//refreshToken
+export const refreshToken = async (req, res) => {
+    const { refreshToken: requestToken } = req.body;
+    if (requestToken === null) {
+        return res.status(403).json({message: "Refresh token is required for this action!"})
+    }
+    try {
+        let refreshToken = await RefreshToken.findOne({where:{token: requestToken}})
+        if (!refreshToken) {
+            return res.status(403).json({ message: 'Refresh token does not exist!' });
+        }
+        let verifyExpiratn = verifyExpiration(refreshToken);
+        if (verifyExpiratn) {
+            RefreshToken.destroy({ where: { id: refreshToken.id } });
+
+            return res.status(403).json({ message: 'Refresh toke expired. Sign in again!' });
+        }
+
+        const user = await refreshToken.getUser();
+        let newAccessToken = jwt.sign({ id: user.id }, authConfig.secret, {
+            expiresIn: authConfig.jwtExpiration
+        })
+        return res.status(200).json({
+            accessToken: newAccessToken,
+            refreshToken: refreshToken.token,
+          });
+    } catch (err) {
+        return res.status(500).send({message: err})
+    }
+
+
 }
 
 //forgot password
@@ -128,6 +175,7 @@ export const forgotPassword = async (req, res) => {
 //verify email
 export const verifyEmail = async (req, res) => {
     const { token } = req.params;
+    console.log(token)
     try {
         const user = await User.findOne({
             where: {
@@ -135,8 +183,11 @@ export const verifyEmail = async (req, res) => {
             }
         });
         if(!user) {
-            return res.status(404).json({ message: 'Invalid or expired token' });
+            return res.status(404).json({ message: 'User Not found' });
         }
+        if (user.verificationTokenExpiration < Date.now()) {
+            return res.status(401).json({ message: 'Token has expired!' });
+          }
         user.verificationToken = null;
         user.verificationTokenExpiration = null;
         user.email_verified = true;
@@ -149,7 +200,10 @@ export const verifyEmail = async (req, res) => {
 }
 
 //send verification email
-export const sendVerificationEmail = async (email, res) => {
+export const sendVerificationEmail = async (req, res) => {
+
+    const {email} = req.body;
+
     const verificationToken = generateToken(20);
     const verificationTokenExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
 
@@ -167,7 +221,7 @@ export const sendVerificationEmail = async (email, res) => {
 
     //send email with verification token (verificationToken)
 
-    return res.status(200).json({ message: 'Verification email sent' });
+    return res.status(200).json({ message: 'Verification email sent. Check your inbox!' });
 }
 
 //verify reset token
@@ -238,21 +292,20 @@ export const deleteUser = async (req, res) => {
 //get User
 export const getUser = async (req, res) => {
     const { id } = req.params;
-
     try {
         const user = await User.findByPk(id);
         if (user) {
-            res.status(200).send({user: user})
+            return res.status(200).json(user)
         }
+        return res.json({message: 'no user', user: user})
     } catch (error) {
-        res.status(500).send({message: 'user not found'})
+       return res.status(500).json({message: 'user not found'})
     }
 }
 
 // update user
 export const update = async (req, res) => {
     const  data  = req.body;
-console.log(data)
     const { id } = req.params;
 
     try {
@@ -260,9 +313,11 @@ console.log(data)
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        console.table(user)
         const updateduser = await user.update(data);
         return res.status(200).json({ user: updateduser, message: 'User Updated' });
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ message: error.message });
     }
 }

@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: ['https://main.d2r6tk0kaz34nj.amplifyapp.com/', 'http://localhost:3000', 'http://localhost:4200', 'http://localhost:5000'],
+    origin: ['https://vijipay.ng', 'http://localhost:4200'],
     optionsSuccessStatus: 200,
     credentials: true,
 }
@@ -21,26 +21,25 @@ app.use('*', cors(corsOptions));
 db.sequelize.sync()
     .then(() => {
       console.log('Resync Db');
-        // initial();
+        initial();
     })
     .catch(err => console.log('Failed to Connect: '+ err.message));
 
-    function initial() {
-        Role.create({
-          id: 1,
-          name: "user"
-        });
-       
-        Role.create({
-          id: 2,
-          name: "moderator"
-        });
-       
-        Role.create({
-          id: 3,
-          name: "admin"
-        });
+    async function initial() {
+      const rolesToCreate = [
+        { id: 1, name: "user" },
+        { id: 2, name: "moderator" },
+        { id: 3, name: "admin" }
+      ];
+    
+      for (const roleData of rolesToCreate) {
+        const existingRole = await Role.findByPk(roleData.id);
+        if (!existingRole) {
+          await Role.create(roleData);
+        }
+      }
     }
+    
       
 app.use(router);
 
