@@ -3,8 +3,8 @@ dotenv.config();
 
 const authConfig = {
     secret: process.env.SECRET,
-    jwtExpiration: process.env.TEST_EXP,
-    jwtRefreshExpiration: process.env.TEST_REFRESH
+    jwtExpiration: process.env.JWT_EXPIRATION,
+    jwtRefreshExpiration: process.env.JWT_REFRESH_EXPIRATION
 };
 
 export default authConfig;
