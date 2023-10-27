@@ -7,6 +7,12 @@ import * as payment from '../controllers/payment.controller.js';
 import * as dispute from '../controllers/dispute.controller.js';
 
 const router = express.Router();
+
+router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Headers",
+    "Authorization, Origin, Content-Type, Accept");
+  next();
+});
 // simple route to display on mainpage
 router.get("/", (req, res) => {
     res.json({
