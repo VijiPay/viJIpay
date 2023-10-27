@@ -71,7 +71,11 @@ export const getUserDisputeById = async (req, res) => {
 export const getDisputeById = async (req, res) => {
   try {
     const { id } = req.params;
-    const dispute = await Dispute.findByPk(id);
+    const dispute = await Dispute.findOne({
+      where: {
+        transaction_id: id
+      }
+    });
     
     if (!dispute) {
       return res.status(404).json({ error: 'Dispute not found' });

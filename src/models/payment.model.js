@@ -14,7 +14,7 @@ export default (sequelize, Sequelize) => {
                 autoIncrement: true
             },
             amount: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.DECIMAL,
                 allowNull: false
             },
             buyerId: {
@@ -22,7 +22,7 @@ export default (sequelize, Sequelize) => {
                 allowNull: false
             },
             fee: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.DECIMAL,
                 allowNull: false
             },
             reference: {
@@ -38,7 +38,7 @@ export default (sequelize, Sequelize) => {
                 defaultValue: false
             },
             totalCollected: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.DECIMAL,
                 allowNull: false
             },
             transactionId: {
