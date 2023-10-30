@@ -30,7 +30,7 @@ export default (sequelize, Sequelize) => {
                 allowNull: false
             },
             sellerId: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             success: {

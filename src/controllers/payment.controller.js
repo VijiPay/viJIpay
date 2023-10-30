@@ -43,7 +43,7 @@ export const savePaymentData = async (req, res) => {
 // get Transaction payment status
 export const status = async (req, res) => {
   const { ref } = req.body;
-  let txn;
+  let dbTotal;
   let payment;
   try {
     const transaction = await Payment.findOne({
@@ -53,10 +53,7 @@ export const status = async (req, res) => {
     });
 
     if (transaction) {
-       txn = {
-        reference: transaction.reference,
-         amount: transaction.amount + transaction.fee,
-       };
+       dbTotal = transaction.totalCollected
     }
       
     const response = await axios.get(
@@ -67,25 +64,26 @@ export const status = async (req, res) => {
     );
       
     if (response) {
-        const resp = response.data.data;
+      const resp = response.data.data;
+      console.log('response', resp)
       payment = {
         status: resp.status,
         reference: resp.reference,
         amount: Number(String(resp.amount).slice(0, -2)),
       };
-        console.log('ehh', payment, txn)
 
-        if (txn.amount == payment.amount && payment.status === "success") {
+        if (dbTotal == payment.amount && payment.status === "success") {
            const updatePay = await Payment.findOne({
                 where: {
                   reference: ref
               }
           })
           await updatePay.update({success: true});
-        res
+        return res
           .status(200)
           .send({ message: "Payment Confirmed", data: payment, id: transaction.transactionId });
-        } else if (txn.amount == payment.amount && payment.status != "success") {
+        }
+        if (dbTotal == payment.amount && payment.status !== "success") {
           
           const transaction = await Transaction.findOne({
             where: {
@@ -95,14 +93,14 @@ export const status = async (req, res) => {
           if (transaction) {
             transaction.update({ status: 'pending' });
           }
-        res
+        return res
           .status(200)
           .send({
             message: "Payment is Pending Confirmation",
             data: payment,
           });
         }
-        else if (txn.amount != payment.amount && payment.status === "success") {
+        if (dbTotal != payment.amount && payment.status === "success") {
           console.log(txn.amount, payment.amount, typeof(txn.amount), typeof(payment.amount))
             res
               .status(200)
