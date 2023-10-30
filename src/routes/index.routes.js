@@ -72,19 +72,19 @@ router.post('/api/v1/signin', user.signin);
 router.post('/api/v1/sendverificationcode', user.sendVerificationEmail);
 
 //verify email code
-router.get('/api/v1/confirmemail/:token', user.verifyEmail);
+router.post('/api/v1/confirmemail', user.verifyEmail);
 
 //refresh token
 router.post("/api/v1/refreshtoken", user.refreshToken)
 
 //forgot password
-router.post('/api/v1/forgotPassword', user.forgotPassword);
+router.post('/api/v1/forgot-password', user.forgotPassword);
 
 //verify token
 router.post('/api/v1/verifyToken', user.verifyResetToken);
 
 //reset password
-router.post('/api/v1/resetPassword', user.resetPassword);
+router.post('/api/v1/reset-password', user.resetPassword);
 
 //verify email
 router.get('/verify/:token', user.verifyEmail);

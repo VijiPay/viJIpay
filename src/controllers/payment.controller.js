@@ -1,3 +1,4 @@
+import { Transaction } from "sequelize";
 import db from "../models/index.js";
 import axios from "axios";
 
@@ -39,7 +40,7 @@ export const savePaymentData = async (req, res) => {
   }
 };
 
-// get Transaction status
+// get Transaction payment status
 export const status = async (req, res) => {
   const { ref } = req.body;
   let txn;
@@ -55,7 +56,7 @@ export const status = async (req, res) => {
        txn = {
         reference: transaction.reference,
          amount: transaction.amount + transaction.fee,
-      };
+       };
     }
       
     const response = await axios.get(
@@ -74,7 +75,7 @@ export const status = async (req, res) => {
       };
         console.log('ehh', payment, txn)
 
-        if (txn.amount === payment.amount && payment.status === "success") {
+        if (txn.amount == payment.amount && payment.status === "success") {
            const updatePay = await Payment.findOne({
                 where: {
                   reference: ref
@@ -84,8 +85,16 @@ export const status = async (req, res) => {
         res
           .status(200)
           .send({ message: "Payment Confirmed", data: payment, id: transaction.transactionId });
-      } else if (txn.amount === payment.amount && payment.status != "success") {
-
+        } else if (txn.amount == payment.amount && payment.status != "success") {
+          
+          const transaction = await Transaction.findOne({
+            where: {
+                id: transaction.transactionId
+              }
+          })
+          if (transaction) {
+            transaction.update({ status: 'pending' });
+          }
         res
           .status(200)
           .send({
@@ -93,8 +102,8 @@ export const status = async (req, res) => {
             data: payment,
           });
         }
-        else if (txn.amount !== payment.amount && payment.status === "success") {
-
+        else if (txn.amount != payment.amount && payment.status === "success") {
+          console.log(txn.amount, payment.amount, typeof(txn.amount), typeof(payment.amount))
             res
               .status(200)
               .send({

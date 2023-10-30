@@ -5,7 +5,9 @@ import authConfig from '../config/auth.config.js';
 import crypto from 'crypto';
 import { customAlphabet } from "nanoid";
 
-const {users: User, roles: Role, refreshToken: RefreshToken} = db;
+import messages from "../models/message.model.js";
+
+const {users: User, roles: Role, refreshToken: RefreshToken, mail} = db;
 //generate token
 const generateToken = (length) => {
     const token = crypto.randomBytes(length).toString('hex');
@@ -41,7 +43,8 @@ const lastName = names[names.length - 1];
             roleId: role.id,
             isSeller: isSeller
         });
-         await user.save();
+        await user.save();
+        await mail('vijipay.africa@gmail.com', 'Welcome to vijiPay', messages.register(firstName + '' + lastName));
 
         //send email
         return res.status(201).json({ message: 'User registered successfully' });
@@ -86,10 +89,11 @@ export const signin = async (req, res) => {
         }
 
         const passwordIsValid = bcrypt.compareSync(password, user.password_hash);
+        console.log('password is valid', passwordIsValid)
         if (!passwordIsValid) {
-            return res.status(401).json({
-                message: 'Invalid Password'
-            });
+            console.log('aah')
+            return res.status(404).json({ message: 'incorrect email or password' });
+
         }
 
         const token = jwt.sign({ id: user.id }, authConfig.secret, {
@@ -168,9 +172,9 @@ export const forgotPassword = async (req, res) => {
     user.resetPasswordToken = resetToken;
 
     user.save();
-
+    console.log('email sent')
     //send email
-    
+    await mail(email, 'Reset Password', messages.requestPasswordReset(email, resetToken))
     return res.status(200).json({ message: 'Reset password link sent to your email', object:user.resetPasswordToken });
    } catch (error) {
        console.error(error.message);
@@ -180,7 +184,8 @@ export const forgotPassword = async (req, res) => {
 
 //verify email
 export const verifyEmail = async (req, res) => {
-    const { token } = req.params;
+    const { token } = req.body;
+    console.log('token',token)
     try {
         const user = await User.findOne({
             where: {
@@ -223,8 +228,8 @@ export const sendVerificationEmail = async (req, res) => {
     user.verificationToken = verificationToken;
     user.verificationTokenExpiration = verificationTokenExpiration;
     user.save();
-
     //send email with verification token (verificationToken)
+    await mail(email, 'Confirm your email address', messages.confirmEmail(verificationToken))
 
     return res.status(200).json({ message: 'Verification email sent. Check your inbox!' });
 }
@@ -251,6 +256,7 @@ export const verifyResetToken = async (req, res) => {
 
 //reset password
 export const resetPassword = async (req, res) => {
+    console.log(req.body)
     try {
         const { email, password, resetToken } = req.body;
 
