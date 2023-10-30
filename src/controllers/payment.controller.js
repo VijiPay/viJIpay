@@ -1,8 +1,9 @@
-import { Transaction } from "sequelize";
+
 import db from "../models/index.js";
 import axios from "axios";
+import messages from "../models/message.model.js";
 
-const { payments: Payment } = db;
+const { payments: Payment, mail, transactions:Transaction , users: User } = db;
 const Op = db.Sequelize.Op;
 const header = {
   "Content-Type": "application/json",
@@ -65,7 +66,6 @@ export const status = async (req, res) => {
       
     if (response) {
       const resp = response.data.data;
-      console.log('response', resp)
       payment = {
         status: resp.status,
         reference: resp.reference,
@@ -78,7 +78,25 @@ export const status = async (req, res) => {
                   reference: ref
               }
           })
-          await updatePay.update({success: true});
+          await updatePay.update({ success: true });
+          let msg = {}
+          //get transaction name fromtransaction usign ID
+          const txn = await transactionsModel.findByPk(transaction.id)
+          // check if seller exists
+          const sellerr = await User.findOne({
+            where: {
+              phone: transaction.sellerId
+            }
+          })
+          if (txn) {
+            msg = {
+              name: txn.product.advert.title,
+              amount:txn.transaction_details.amount
+            }
+          }
+          if (sellerr && sellerr.isSeller) {
+            await mail(sellerr.email, 'Payment Recieved and Confirmed', messages.paymentReceivedFromBuyer(msg.name, msg.amount))
+          }
         return res
           .status(200)
           .send({ message: "Payment Confirmed", data: payment, id: transaction.transactionId });
@@ -101,7 +119,7 @@ export const status = async (req, res) => {
           });
         }
         if (dbTotal != payment.amount && payment.status === "success") {
-          console.log(txn.amount, payment.amount, typeof(txn.amount), typeof(payment.amount))
+          console.log(dbTotal, payment.amount, typeof(dbTotal), typeof(payment.amount))
             res
               .status(200)
               .send({

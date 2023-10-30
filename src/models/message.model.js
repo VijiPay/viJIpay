@@ -42,12 +42,59 @@ const requestPasswordReset = (name, code) => {
     `
 }
 
+const transactionCreated = (name, price) => {
+    return `
+    <div style="padding-top: 100px; text-align: center;">
+    <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
+    <h1>New Transaction on vijiPay</h1>
+    <p>Hello there, a customer has shown interest in buying ${name} from you for ${price}.<p/>
+    <p>login to your vijiPay account to see the buyer details and contract.</p>
+    <a href="https://vijipay.ng/auth/login" style="display: inline-block; padding: 10px 20px; background-color: #098700; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 15px;">Login now!</a>
+    ${footer}
+  </div>
+    `
+}
+
+const paymentReceivedFromBuyer = (transaction_name, amount) => {
+    return `
+    <div style="padding-top: 100px; text-align: center;">
+    <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
+    <h1>Dear user,</h1>
+    <p>Your Payment of ${amount} for ${transaction_name} has been received.<p/>
+    <p>if you did not make this transaction, contact us immediately via the channels below</p>
+    ${footer}
+  </div>
+    `
+}
+const transactionCompleted = (transaction_name) => {
+    return `
+    <div style="padding-top: 100px; text-align: center;">
+    <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
+    <h1>Dear user,</h1>
+    <p>Your transaction for ${transaction_name} is now completed.<p/>
+    <p>if you have any issue with this transaction, contact us immediately via the channels below</p>
+    ${footer}
+  </div>
+    `
+}
+const transactionDispute = (transaction_name, amount) => {
+    return `
+    <div style="padding-top: 100px; text-align: center;">
+    <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
+    <h1>Dear user,</h1>
+    <p>Your transaction for ${transaction_name} is under appeal.<p/>
+    <p>login to vijiPay to see the decision to the dispute</p>
+    ${footer}
+  </div>
+    `
+}
+
 const footer = `
 <hr />
 <h4>Need help?</h4>
 <p> Get in touch by emailing Customer success at</p>
 <a href="mailto:help@vijipay.ng">help@vijipay.ng</a>
 `
-const messages = { register, confirmEmail, requestPasswordReset };
+const messages = { register, confirmEmail, requestPasswordReset, transactionCreated, paymentReceivedFromBuyer, transactionCompleted, transactionDispute };
 
 export default messages;
