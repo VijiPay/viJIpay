@@ -81,7 +81,7 @@ export const status = async (req, res) => {
           await updatePay.update({ success: true });
           let msg = {}
           //get transaction name fromtransaction usign ID
-          const txn = await transactionsModel.findByPk(transaction.id)
+          const txn = await Transaction.findByPk(transaction.id)
           // check if seller exists
           const sellerr = await User.findOne({
             where: {

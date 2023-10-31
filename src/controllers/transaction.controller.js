@@ -41,7 +41,7 @@ export const create = async (req, res) => {
             transaction_details: transaction_details
         });
         // Send SMS and Email notification to the seller
-        await mail('vijipay.africa@gmail.com', 'New Order via vijiPay', messages.transactionCreated(product.advert.title, transaction_details.amount))
+        await mail(seller.email, 'New Order via vijiPay', messages.transactionCreated(product.advert.title, transaction_details.amount))
         console.log('Send sms and email notification to the seller with id: ' + seller.email, seller.phone)
         sendSmsMessage.createTransaction(seller.phone, messages.transactionCreatedSMS(product.advert.title, transaction_details.amount))
         return res.status(200).json({id: transaction.id, message: 'Transaction created Successfully' });
