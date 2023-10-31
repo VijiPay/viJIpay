@@ -3,7 +3,7 @@ import db from "../models/index.js";
 import axios from "axios";
 import messages from "../models/message.model.js";
 
-const { payments: Payment, mail, transactions:Transaction , users: User } = db;
+const { payments: Payment, mail, transations: Transaction, users: User } = db;
 const Op = db.Sequelize.Op;
 const header = {
   "Content-Type": "application/json",
@@ -45,17 +45,23 @@ export const status = async (req, res) => {
   const { ref } = req.body;
   let dbTotal;
   let payment;
+  let txn;
   try {
-    const transaction = await Payment.findOne({
+    const paymentObject = await Payment.findOne({
       where: {
         reference: ref,
       },
     });
 
-    if (transaction) {
-       dbTotal = transaction.totalCollected
+    if (paymentObject) {
+      dbTotal = paymentObject.totalCollected
+      txn = await Transaction.findOne({
+        where: {
+            id: paymentObject.transactionId
+          }
+      })
     }
-      
+
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${ref}`,
       {
@@ -79,15 +85,14 @@ export const status = async (req, res) => {
           })
           await updatePay.update({ success: true });
           let msg = {}
-          //get transaction name fromtransaction usign ID
-          const txn = await Transaction.findByPk(transaction.id)
           // check if seller exists
           const sellerr = await User.findOne({
             where: {
-              phone: transaction.sellerId
+              phone: paymentObject.sellerId
             }
           })
           if (txn) {
+            console.log('transaction dey')
             msg = {
               name: txn.product.advert.title,
               amount:txn.transaction_details.amount
@@ -98,17 +103,12 @@ export const status = async (req, res) => {
           }
         return res
           .status(200)
-          .send({ message: "Payment Confirmed", data: payment, id: transaction.transactionId });
+          .send({ message: "Payment Confirmed", data: payment, id: paymentObject.transactionId });
         }
         if (dbTotal == payment.amount && payment.status !== "success") {
-          
-          const transaction = await Transaction.findOne({
-            where: {
-                id: transaction.transactionId
-              }
-          })
-          if (transaction) {
-            transaction.update({ status: 'pending' });
+        
+          if (txn) {
+            txn.update({ status: 'pending' });
           }
         return res
           .status(200)
