@@ -33,6 +33,8 @@ const lastName = names[names.length - 1];
             }
         });
         console.log('role', role)
+        const verificationToken = generateToken(20);
+    const verificationTokenExpiration = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
 
         const user = await User.create({
             first_name:firstName,
@@ -41,11 +43,13 @@ const lastName = names[names.length - 1];
             password_hash: bcrypt.hashSync(password, 8),
             phone:phone,
             roleId: role.id,
-            isSeller: isSeller
+            isSeller: isSeller,
+            verificationToken: verificationToken,
+            verificationTokenExpiration: verificationTokenExpiration
         });
         await user.save();
-        await mail(email, 'Welcome to vijiPay', messages.register(firstName + '' + lastName));
-
+        await mail(email, 'Welcome to vijiPay', messages.register(`${firstName} ${lastName}`));
+        await mail(email, 'Confirm your email address', messages.confirmEmail(verificationToken));
         //send email
         return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
