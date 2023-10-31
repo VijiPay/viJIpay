@@ -9,7 +9,6 @@ const header = {
   "Content-Type": "application/json",
   Authorization: `Bearer sk_test_8d11b41c279986a162d7793bdb24d58a3a38d146`,
 };
-// save payment details to DB
 
 export const savePaymentData = async (req, res) => {
   try {
