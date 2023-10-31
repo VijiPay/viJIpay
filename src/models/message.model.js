@@ -55,6 +55,14 @@ const transactionCreated = (name, price) => {
     `
 }
 
+const transactionCreatedSMS = (name, price) => {
+  return `
+  Hello there, a customer from jiji has shown interest in buying - ${name} from you for - N${price}.
+  
+  Login to vijiPay or create an account to see the buyer details and continue the transaction. https://vijipay.ng/auth/login Wish you success in your transaction.
+  `
+}
+
 const paymentReceivedFromBuyer = (transaction_name, amount) => {
     return `
     <div style="padding-top: 100px; text-align: center;">
@@ -95,6 +103,6 @@ const footer = `
 <p> Get in touch by emailing Customer success at</p>
 <a href="mailto:help@vijipay.ng">help@vijipay.ng</a>
 `
-const messages = { register, confirmEmail, requestPasswordReset, transactionCreated, paymentReceivedFromBuyer, transactionCompleted, transactionDispute };
+const messages = { register, confirmEmail, requestPasswordReset, transactionCreated, paymentReceivedFromBuyer, transactionCompleted, transactionDispute, transactionCreatedSMS };
 
 export default messages;

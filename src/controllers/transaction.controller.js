@@ -1,5 +1,7 @@
 import db from '../models/index.js';
 import messages from '../models/message.model.js';
+import sendSmsMessage from '../models/twilio.model.js';
+
 
 const {transations:Transaction, users:User, mail } = db;
 const Op = db.Sequelize.Op;
@@ -26,7 +28,9 @@ export const create = async (req, res) => {
                 transaction_details:transaction_details
             });
 
-             // Send SMS notification to the supplied phone
+            // Send SMS notification to the supplied phone
+            sendSmsMessage.createTransaction(phone, messages.transactionCreatedSMS(product.advert.title, transaction_details.amount));
+            
              console.log('Send notification to seller with phone number: ' + phone)
             return res.status(200).json({id: transaction.id, message: 'Transaction created Successfully' });
         }
@@ -38,8 +42,8 @@ export const create = async (req, res) => {
         });
         // Send SMS and Email notification to the seller
         await mail('vijipay.africa@gmail.com', 'New Order via vijiPay', messages.transactionCreated(product.advert.title, transaction_details.amount))
-        console.log('Send sms and email notification to the seller with id: ' + seller.email , seller.phone)
-
+        console.log('Send sms and email notification to the seller with id: ' + seller.email, seller.phone)
+        sendSmsMessage.createTransaction(seller.phone, messages.transactionCreatedSMS(product.advert.title, transaction_details.amount))
         return res.status(200).json({id: transaction.id, message: 'Transaction created Successfully' });
     } catch (error) {
         console.error(error.message);
