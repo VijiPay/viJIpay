@@ -44,7 +44,7 @@ const lastName = names[names.length - 1];
             isSeller: isSeller
         });
         await user.save();
-        await mail('vijipay.africa@gmail.com', 'Welcome to vijiPay', messages.register(firstName + '' + lastName));
+        await mail(email, 'Welcome to vijiPay', messages.register(firstName + '' + lastName));
 
         //send email
         return res.status(201).json({ message: 'User registered successfully' });
