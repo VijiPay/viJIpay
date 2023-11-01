@@ -98,10 +98,14 @@ export const getDisputeById = async (req, res) => {
 export const end = async (req, res) => {
   try {
     const { id } = req.params;
-    const dispute = await Dispute.findByPk(id);
+    const dispute = await Dispute.findOne({
+      where: {
+        transaction_id: id
+      }
+    });
     
     if (!dispute) {
-      return res.status(404).json({ error: 'Dispute not found' });
+      return res.status(404).json({ message: 'Dispute not found' });
     }
     const transaction = await Transaction.findByPk(dispute.transaction_id)
     if (transaction) {
@@ -113,6 +117,6 @@ export const end = async (req, res) => {
 
     return res.status(200).json({message: 'Dispute closed!'});
   } catch (error) {
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Something went wrong! try again later.' });
   }
 };

@@ -26,7 +26,7 @@ export const getProductInfo = async (req, res) => {
             return res.status(400).json({ message: 'No valid link found!' });
         }
 
-        const response = await axios.get(getEndpoint, { timeout: 5000 });
+        const response = await axios.get(getEndpoint, { timeout: 10000 });
         const product = new JijiProductModel(response.data);
 
         if (!product.seller.phone) {

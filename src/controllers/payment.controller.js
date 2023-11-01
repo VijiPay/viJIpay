@@ -41,99 +41,71 @@ export const savePaymentData = async (req, res) => {
 };
 
 // get Transaction payment status
+
 export const status = async (req, res) => {
-  const { ref } = req.body;
-  let dbTotal;
-  let payment;
-  let txn;
   try {
+    const { ref } = req.body;
+
     const paymentObject = await Payment.findOne({
-      where: {
-        reference: ref,
-      },
+      where: { reference: ref },
     });
 
-    if (paymentObject) {
-      dbTotal = paymentObject.totalCollected
-      txn = await Transaction.findOne({
-        where: {
-            id: paymentObject.transactionId
-          }
-      })
+    if (!paymentObject) {
+      return res.status(400).send('Invalid Payment Reference');
     }
 
-    const response = await axios.get(
-      `https://api.paystack.co/transaction/verify/${ref}`,
-      {
-        headers: header,
+    const dbTotal = paymentObject.totalCollected;
+    const transactionId = paymentObject.transactionId;
+
+    const [paymentResponse, transaction] = await Promise.all([
+      axios.get(`https://api.paystack.co/transaction/verify/${ref}`, { headers: header, timeout: 10000 }),
+      Transaction.findOne({ where: { id: transactionId } })
+    ]);
+
+    const paymentData = paymentResponse.data.data;
+    const paymentAmount = Number(String(paymentData.amount).slice(0, -2));
+
+    if (dbTotal !== paymentAmount) {
+      return res.status(200).send({
+        message: "You Sent a Wrong Amount",
+        data: { status: paymentData.status, reference: paymentData.reference, amount: paymentAmount, id: transactionId },
+      });
+    }
+
+    if (paymentData.status === "success") {
+      await Payment.update({ success: true }, { where: { reference: ref } });
+
+      if (transaction) {
+        await transaction.update({ status: 'pending' });
       }
-    );
-      
-    if (response) {
-      const resp = response.data.data;
-      payment = {
-        status: resp.status,
-        reference: resp.reference,
-        amount: Number(String(resp.amount).slice(0, -2)),
-      };
 
-        if (dbTotal == payment.amount && payment.status === "success") {
-           const updatePay = await Payment.findOne({
-                where: {
-                  reference: ref
-              }
-          })
-          await updatePay.update({ success: true });
-          let msg = {}
-          // check if seller exists
-          const sellerr = await User.findOne({
-            where: {
-              phone: paymentObject.sellerId
-            }
-          })
-          if (txn) {
-            console.log('transaction dey')
-            msg = {
-              name: txn.product.advert.title,
-              amount:txn.transaction_details.amount
-            }
-          }
-          if (sellerr && sellerr.isSeller) {
-            await mail(sellerr.email, 'Payment Recieved and Confirmed', messages.paymentReceivedFromBuyer(msg.name, msg.amount))
-          }
-        return res
-          .status(200)
-          .send({ message: "Payment Confirmed", data: payment, id: paymentObject.transactionId });
-        }
-        if (dbTotal == payment.amount && payment.status !== "success") {
-        
-          if (txn) {
-            txn.update({ status: 'pending' });
-          }
-        return res
-          .status(200)
-          .send({
-            message: "Payment is Pending Confirmation",
-            data: payment,
-          });
-        }
-        if (dbTotal != payment.amount && payment.status === "success") {
-          console.log(dbTotal, payment.amount, typeof(dbTotal), typeof(payment.amount))
-            res
-              .status(200)
-              .send({
-                message: "You Sent a Wrong Amount",
-                data: payment,
-              });
-          }
+      const seller = await User.findOne({ where: { phone: paymentObject.sellerId } });
+
+      if (seller && seller.isSeller) {
+        const msg = {
+          name: transaction.product.advert.title,
+          amount: transaction.transaction_details.amount
+        };
+        await mail(seller.email, 'Payment Received and Confirmed', messages.paymentReceivedFromBuyer(msg.name, msg.amount));
+      }
+
+      return res.status(200).send({
+        message: "Payment Confirmed",
+        data: { status: paymentData.status, reference: paymentData.reference, amount: paymentAmount },
+        id: transactionId
+      });
     } else {
-      res.status(200).send({ message: "no response" });
+      return res.status(200).send({
+        message: "Payment is Pending Confirmation",
+        data: { status: paymentData.status, reference: paymentData.reference, amount: paymentAmount },
+      });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(400).send({ message: err });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message:'An error occurred. Check network connection'});
   }
 };
+
 
 
 // Helper function to get bank names and codes
