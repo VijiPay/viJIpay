@@ -98,8 +98,9 @@ export const getAllTransactions = async (req, res) => {
     }
 }
 
-// get all transactions by user id
+// get all transactions for a user
 export const getAllTransactionsByUserId = async (req, res) => {
+
     const { id } = req.params;
 
     try {
@@ -109,10 +110,7 @@ export const getAllTransactionsByUserId = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        let transactions;
-
-        if (user.isSeller) {
-            transactions = await Transaction.findAll({
+            const transactions = await Transaction.findAll({
                 where: {
                     [Op.or]: [
                         { 'product.seller.phone': user.phone },
@@ -120,15 +118,9 @@ export const getAllTransactionsByUserId = async (req, res) => {
                     ]
                 }
             })
+            console.log('transactions:',transactions)
             return res.status(200).json({ transactions, isSeller: true });
-        } else {
-            transactions = await Transaction.findAll({
-                where: {
-                    'transaction_details.buyer_id': id
-                }
-            })
-            return res.status(200).json({ transactions, isSeller: false });
-        }
+        
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Server Error' });
