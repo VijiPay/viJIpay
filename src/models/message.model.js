@@ -1,6 +1,6 @@
 const register = (name) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Welcome to vijiPay</h1>
     <p>Dear ${name}, <br /> Thank you for registering on our platform. We are thrilled to have you as a user! <p/>
@@ -16,7 +16,7 @@ const register = (name) => {
 
 const confirmEmail = (code) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Verify your Email Address with vijiPay</h1>
     <p>Click the button below to verify your email address.<p/>
@@ -30,7 +30,7 @@ const confirmEmail = (code) => {
 
 const requestPasswordReset = (name, code) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Dear user,</h1>
     <p>Click the button below to change your password.<p/>
@@ -44,7 +44,7 @@ const requestPasswordReset = (name, code) => {
 
 const transactionCreated = (name, price) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>New Transaction on vijiPay</h1>
     <p>Hello there, a customer has shown interest in buying ${name} from you for ${price}.<p/>
@@ -65,7 +65,7 @@ const transactionCreatedSMS = (name, price) => {
 
 const paymentReceivedFromBuyer = (transaction_name, amount) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Dear user,</h1>
     <p>Your Payment of ${amount} for ${transaction_name} has been received.<p/>
@@ -76,7 +76,7 @@ const paymentReceivedFromBuyer = (transaction_name, amount) => {
 }
 const transactionCompleted = (transaction_name) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Dear user,</h1>
     <p>Your transaction for ${transaction_name} is now completed.<p/>
@@ -87,7 +87,7 @@ const transactionCompleted = (transaction_name) => {
 }
 const transactionDispute = (transaction_name, amount) => {
     return `
-    <div style="padding-top: 100px; text-align: center;">
+    <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>Dear user,</h1>
     <p>Your transaction for ${transaction_name} is under appeal.<p/>

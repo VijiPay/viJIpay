@@ -93,20 +93,17 @@ export const signin = async (req, res) => {
         }
 
         const passwordIsValid = bcrypt.compareSync(password, user.password_hash);
-        console.log('password is valid', passwordIsValid)
         if (!passwordIsValid) {
-            console.log('aah')
             return res.status(404).json({ message: 'incorrect email or password' });
-
         }
 
         const token = jwt.sign({ id: user.id }, authConfig.secret, {
             expiresIn: authConfig.jwtExpiration
         });
+        const refreshToken = await createToken(user.id);
         const role = await Role.findByPk(user.roleId);
         const authority = role.name;
 
-        let refreshToken = await createToken(user.id);
 
         const response = {
             id: user.id,
@@ -119,6 +116,7 @@ export const signin = async (req, res) => {
             accessToken: token,
             refreshToken: refreshToken.token
         }
+        // res.cookie('koder', token, { httpOnly: true, secure: true, domain: 'vijipay.ng', path: '/' });
 
         return res.status(200).json(response);
     } catch (error) {
@@ -155,8 +153,6 @@ export const refreshToken = async (req, res) => {
     } catch (err) {
         return res.status(500).send({message: err})
     }
-
-
 }
 
 //forgot password

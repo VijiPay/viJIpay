@@ -86,7 +86,9 @@ export const getDisputeById = async (req, res) => {
         phone: dispute.seller_phone
       }
     })
-    console.log(dispute, buyer, seller)
+    if (!seller) {
+      return res.status(404).json({dispute, buyer, message: 'Seller did not register on vijiPay or might have changed phone number. Contact support immediately'})
+    }
 
     return res.status(200).json({dispute, buyer, seller});
   } catch (error) {

@@ -118,7 +118,6 @@ export const getAllTransactionsByUserId = async (req, res) => {
                     ]
                 }
             })
-            console.log('transactions:',transactions)
             return res.status(200).json({ transactions, isSeller: true });
         
     } catch (error) {

@@ -3,24 +3,26 @@ import authConfig from '../config/auth.config.js';
 import db from '../models/index.js';
 const { users: User } = db;
 
-const { tokenExpiredError } = jwt;
+const { TokenExpiredError } = jwt;
 
-const catchError = (err, res) => {
-    if (err instanceof tokenExpiredError) {
-        return res.status(401).send({message: 'Token Expired'})
+const catchError = (err, req, res, next) => {
+    if (err instanceof TokenExpiredError) {
+      return res.status(401).send({ message: "Unauthorized! Access Token has expired!" });
     }
-    return res.status(401).send({message: 'Not allowed!'})
-} 
+    // Call the next middleware with the error to continue the error handling
+    next(err);
+  };
 
 const verifyToken = (req, res, next) => { 
     let token = req.headers["authorization"];
     if (!token) {
         return res.status(403).json({ message: 'No token provided' });
     }
-
+    
+    token = token.split(" ")[1];
     jwt.verify(token, authConfig.secret, (err, decoded) => {
         if (err) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return catchError(err, req, res, next);
         }
         req.userId = decoded.id;
         next();
@@ -29,7 +31,7 @@ const verifyToken = (req, res, next) => {
 
 // check if user is admin
 const isAdmin = async (req, res, next) => {
-    console.log(req.body)
+    console.log(req.params)
     try {
         const user = await User.findByPk(req.id);
 console.log(user)
