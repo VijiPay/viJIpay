@@ -5,6 +5,7 @@ import { verifySignUp, authJwt } from '../middleware/index.js';
 import * as user from '../controllers/user.controller.js';
 import * as payment from '../controllers/payment.controller.js';
 import * as dispute from '../controllers/dispute.controller.js';
+import * as adminDashboard from '../controllers/admin.controller.js';
 
 const router = express.Router();
 
@@ -111,5 +112,13 @@ router.post('/api/v1/dispute/create/:id', [authJwt.verifyToken], dispute.create)
 router.get('/api/v1/disputes/:id', [authJwt.verifyToken], dispute.getUserDisputeById)
 router.get('/api/v1/dispute/:id', [authJwt.verifyToken], dispute.getDisputeById)
 router.post('/api/v1/dispute/end/:id', [authJwt.verifyToken], dispute.end);
+
+
+
+// ::::::::::::::::::::::::Admin Dashboard ::::::::::::::::::::::::::
+router.get('/api/v1/admin/summary', adminDashboard.adminSummary);
+router.get('/api/v1/admin/activedisputes', adminDashboard.listActiveDisputes);
+router.post('/api/v1/admin/dispute/:transactionId/close', adminDashboard.closeDispute);
+
 
 export default router;
