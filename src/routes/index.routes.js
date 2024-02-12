@@ -18,7 +18,7 @@ router.use((req, res, next) => {
 router.get("/", (req, res) => {
     res.json({
       message:
-        "You are viewingy viJIPay. contact developer: davidshemang@gmail.com or whatsapp https://wa.me/+2348035542225",
+        "You are viewing viJIPay. contact developer: vijipay.africa@gmail.com or whatsapp https://wa.me/+2348035542225",
     });
 });
 // get product information from jiji using product url
