@@ -96,3 +96,15 @@ export const markPayoutAsPaid = async (req, res) => {
         return res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// Endpoint to get the total number of Users
+export const getTotalUsers = async (req, res) => {
+    try {
+        const totalUsers = await User.count();
+        return res.status(200).json({ totalUsers });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+

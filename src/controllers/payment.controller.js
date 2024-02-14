@@ -7,7 +7,7 @@ const { payments: Payment, mail, transations: Transaction, users: User } = db;
 const Op = db.Sequelize.Op;
 const header = {
   "Content-Type": "application/json",
-  Authorization: `Bearer sk_test_5fb337fc4b353b1428b344263235c42784d79fe1`,
+  Authorization: `Bearer sk_live_706fc88adeb71f029dedced872877a2bddc75a51`,
 };
 
 export const savePaymentData = async (req, res) => {
@@ -58,8 +58,6 @@ export const status = async (req, res) => {
     const dbTotal = paymentObject.totalCollected;
     const transactionId = paymentObject.transactionId;
 
-    console.log(ref);
-
     const [paymentResponse, transaction] = await Promise.all([
       axios.get(`https://api.paystack.co/transaction/verify/${ref}`, { headers: header, timeout: 10000 }),
 
@@ -68,8 +66,6 @@ export const status = async (req, res) => {
 
     const paymentData = paymentResponse.data.data;
     const paymentAmount = Number(String(paymentData.amount).slice(0, -2));
-
-    // console
 
     if (dbTotal != paymentAmount) {
       return res.status(200).send({
@@ -94,7 +90,7 @@ export const status = async (req, res) => {
         };
         await mail(seller.email, 'Payment Received and Confirmed', messages.paymentReceivedFromBuyer(msg.name, msg.amount));
       }
-
+      console.log(paymentData, typeof(transactionId))
       return res.status(200).send({
         message: "Payment Confirmed",
         data: { status: paymentData.status, reference: paymentData.reference, amount: paymentAmount },

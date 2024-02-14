@@ -119,6 +119,7 @@ router.post('/api/v1/dispute/end/:id', [authJwt.verifyToken], dispute.end);
 router.get('/api/v1/admin/summary', adminDashboard.adminSummary);
 router.get('/api/v1/admin/activedisputes', adminDashboard.listActiveDisputes);
 router.post('/api/v1/admin/dispute/:transactionId/close', adminDashboard.closeDispute);
+router.get('/api/v1/admin/totalusers', adminDashboard.getTotalUsers);
 
 
 export default router;

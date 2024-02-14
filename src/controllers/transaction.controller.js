@@ -57,6 +57,8 @@ export const update = async (req, res) => {
 
     const { id } = req.params;
 
+    console.log(status, id)
+
     try {
         const transaction = await Transaction.findByPk(id);
         if (!transaction) {
