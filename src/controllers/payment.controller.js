@@ -7,7 +7,7 @@ const { payments: Payment, mail, transations: Transaction, users: User } = db;
 const Op = db.Sequelize.Op;
 const header = {
   "Content-Type": "application/json",
-  Authorization: `Bearer sk_test_8d11b41c279986a162d7793bdb24d58a3a38d146`,
+  Authorization: `Bearer sk_test_5fb337fc4b353b1428b344263235c42784d79fe1`,
 };
 
 export const savePaymentData = async (req, res) => {
@@ -54,18 +54,24 @@ export const status = async (req, res) => {
       return res.status(400).send('Invalid Payment Reference');
     }
 
+    
     const dbTotal = paymentObject.totalCollected;
     const transactionId = paymentObject.transactionId;
 
+    console.log(ref);
+
     const [paymentResponse, transaction] = await Promise.all([
       axios.get(`https://api.paystack.co/transaction/verify/${ref}`, { headers: header, timeout: 10000 }),
+
       Transaction.findOne({ where: { id: transactionId } })
     ]);
 
     const paymentData = paymentResponse.data.data;
     const paymentAmount = Number(String(paymentData.amount).slice(0, -2));
 
-    if (dbTotal !== paymentAmount) {
+    // console
+
+    if (dbTotal != paymentAmount) {
       return res.status(200).send({
         message: "You Sent a Wrong Amount",
         data: { status: paymentData.status, reference: paymentData.reference, amount: paymentAmount, id: transactionId },

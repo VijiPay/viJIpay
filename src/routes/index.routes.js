@@ -49,7 +49,7 @@ router.get('/api/v1/transactions/status/:status', [authJwt.isAdmin], transaction
 router.get('/api/v1/transactions/status/count/:status', [authJwt.isAdmin], transaction.findAllTransactionsCountByStatus); 
 
 // delete escrow transaction by id
-router.delete('/api/v1/delete/:id', [authJwt.isAdmin], transaction.deleteTransaction);
+router.delete('/api/v1/delete/:id', [authJwt.verifyToken], transaction.deleteTransaction);
 
 // delete all escrow transactions
 router.delete('/api/v1/delete', [authJwt.isAdmin], transaction.deleteAllTransactions);
