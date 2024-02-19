@@ -47,7 +47,7 @@ const transactionCreated = (name, price) => {
     <div style="padding-top: 10px; text-align: center;">
     <img src="https://res.cloudinary.com/deviti/image/upload/v1698524616/vijiPay_1_rlq2tz.png" width="80px" height="80px" alt="logo">
     <h1>New Transaction on vijiPay</h1>
-    <p>Hello there, a customer has shown interest in buying ${name} from you for ${price}.<p/>
+    <p>Hello there, a customer has shown interest in buying ${name} from you for ${price.toLocaleString('en-NG')}.<p/>
     <p>login to your vijiPay account to see the buyer details and contract.</p>
     <a href="https://vijipay.ng/auth/login" style="display: inline-block; padding: 10px 20px; background-color: #098700; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 15px;">Login now!</a>
     ${footer}
@@ -55,11 +55,13 @@ const transactionCreated = (name, price) => {
     `
 }
 
-const transactionCreatedSMS = (name, price) => {
+const transactionCreatedSMS = (name, price, id) => {
   return `
-  Hello there, a customer from jiji has shown interest in buying - ${name} from you for - N${price}.
+  Hello, a customer from jiji has shown interest in buying - ${name} from you for - N${price.toLocaleString('en-NG')}.
   
-  Login to vijiPay or create an account to see the buyer details and continue the transaction. https://vijipay.ng/auth/login Wish you success in your transaction.
+  Login to or create an account on www.vijipay.ng to continue the transaction.
+
+  Wish you success.
   `
 }
 

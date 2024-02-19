@@ -29,9 +29,8 @@ export const create = async (req, res) => {
             });
 
             // Send SMS notification to the supplied phone
-            sendSmsMessage.createTransaction(phone, messages.transactionCreatedSMS(product.advert.title, transaction_details.amount));
+            sendSmsMessage.createTransaction(phone, messages.transactionCreatedSMS(product.advert.title, transaction_details.amount, transaction.id));
             
-             console.log('Send notification to seller with phone number: ' + phone)
             return res.status(200).json({id: transaction.id, message: 'Transaction created Successfully' });
         }
 
